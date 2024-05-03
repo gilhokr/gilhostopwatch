@@ -123,10 +123,10 @@ private fun StopWatch(
         if (state == TimerState.RUNNING && vibstate ) {
 //            val vibchk: String = text.split(":")[2] // "HH:mm:ss:SS" 00:11:22:33 // 자주 진동함.
             val vibchk: String = text.substring(6) // "HH:mm:ss:SS" 00:11:22:33
-            if ( vibchk == "00:00" || vibchk == "00:01" || vibchk == "00:02" ) { // 안되고 넘어가서 추가
+            if ( vibchk == "00:00" || vibchk == "00:01" || vibchk == "00:02" || vibchk == "00:03" ) { // 안되고 넘어가서 추가
                 mVibrator.vibrate(vibrationEffectSingle1)
             }
-            if ( vibchk == "30:00" || vibchk == "30:01" || vibchk == "30:02" ) {
+            if ( vibchk == "30:00" || vibchk == "30:01" || vibchk == "30:02" || vibchk == "30:03" ) {
                 mVibrator.vibrate(vibrationEffectSingle2)
             }
         }
