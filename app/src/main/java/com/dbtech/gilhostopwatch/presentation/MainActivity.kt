@@ -12,6 +12,7 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -87,11 +88,7 @@ class MainActivity : ComponentActivity() {
             val viewModel = viewModel<StopWatchViewModel>()
             val timerState by viewModel.timerState.collectAsStateWithLifecycle()
             val stopWatchText by viewModel.stopWatchText.collectAsStateWithLifecycle()
-            TimeText( // 상단 현재 시간 표시
-                timeTextStyle = TimeTextDefaults.timeTextStyle(
-//                fontSize = 10.sp // 크기
-                )
-            )
+
             StopWatch( // STOP WATCH
                 vibstate = Vib_01,
                 state = timerState,
@@ -99,6 +96,12 @@ class MainActivity : ComponentActivity() {
                 onToggleRunning = viewModel::toggleIsRunning,
                 onReset = viewModel::resetTimer,
                 modifier = Modifier.fillMaxSize()
+            )
+            // StopWatch() 아래 있어야 시간이 보인다. 위에 있으면 안된다.
+            TimeText( // 상단 현재 시간 표시
+                timeTextStyle = TimeTextDefaults.timeTextStyle(
+                //      fontSize = 10.sp // 크기
+                )
             )
         }
     }
@@ -115,16 +118,19 @@ private fun StopWatch(
 ) {
     Column( // 컬럼 추가
         modifier = modifier
-            .background(MaterialTheme.colors.background), // 워치 백그라운드 컬러
-        verticalArrangement = Arrangement.Center,
+            .background(MaterialTheme.colors.background)
+        // 워치 백그라운드 컬러
+        // .background 들어가면 상단 TimeText 시간 사라진다.
+        // 주석 처리시 vm에서는 검정 timetext 안보이고, 워치 에서는 배경 회색 timetext는 보인다.
+        ,verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // 00초,30초 진동
         if (state == TimerState.RUNNING && vibstate ) {
-//            val vibchk: String = text.split(":")[2] // "HH:mm:ss:SS" 00:11:22:33 // 자주 진동함.
-            val vibchk: String = text.substring(6) // "HH:mm:ss:SS" 00:11:22:33
+//            val vibchk: String = text.split(":")[1] // "mm:ss:SS" 00:11:22 // 자주 진동함.
+            val vibchk: String = text.substring(3) // "mm:ss:SS" 11:22:33
             if ( vibchk == "00:00" || vibchk == "00:01" || vibchk == "00:02" || vibchk == "00:03" ||
-                 vibchk == "00:04" || vibchk == "00:05" ) { // 안되고 넘어가서 추가
+                vibchk == "00:04" || vibchk == "00:05" ) { // 안되고 넘어가서 추가
                 mVibrator.vibrate(vibrationEffectSingle1)
             }
             if ( vibchk == "30:00" || vibchk == "30:01" || vibchk == "30:02" || vibchk == "30:03" ||
@@ -132,23 +138,21 @@ private fun StopWatch(
                 mVibrator.vibrate(vibrationEffectSingle2)
             }
         }
-
-        // Time Text
         Text(
             text = "길호 STOPWATCH",
             fontSize = if (state != TimerState.RESET) // 실행 하면 폰트 크기를 크게 한다.
-            { 10.sp } else { 30.sp }, // 중지 하면 작게
+            { 10.sp } else { 10.sp }, // 중지 하면 10 작게
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(10.dp)) // 위 아래 간격
+        //Spacer(modifier = Modifier.height(5.dp)) // 위 아래 간격
         Text(
             text = text,
-            fontSize = if (state != TimerState.RESET) { 30.sp } else { 10.sp },
+            fontSize = if (state != TimerState.RESET) { 40.sp } else { 40.sp },
             fontWeight = FontWeight.SemiBold,
             color = Color.White,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(8.dp)) // 위 아래 간격
+        Spacer(modifier = Modifier.height(5.dp)) // 위 아래 간격
         Row( // 1 | 2 나눈다
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
@@ -206,7 +210,33 @@ private fun StopWatch(
                     contentDescription = null
                 )
             }
-
         }
+//        Spacer(modifier = Modifier.height(5.dp)) // 위 아래 간격
+        // Setting Button
+//        Button(
+//            onClick = {
+//                Vib_01 = if ( vibstate ) {
+//                    false
+//                } else {
+//                    true
+//                }
+////                    System.out.println("vib_01: $Vib_01 vibstate: $vibstate")
+//            },
+//            enabled = state != TimerState.RESET,
+//            colors = ButtonDefaults.buttonColors(
+//                backgroundColor = MaterialTheme.colors.surface //  투명 변경
+//            )
+//        ) {
+//            Icon(
+//                // timer 가 동작 할때만 동작 / stop 상태에서는 icon 변경이 발생 하지 않는다.
+//                imageVector = if ( vibstate ) {
+//                    Icons.Default.Vibration
+//                } else {
+//                    Icons.Default.MobileOff
+//                },
+//                contentDescription = null
+//            )
+//        }
+
     }
 }
